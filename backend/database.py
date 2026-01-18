@@ -17,20 +17,37 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 # This 'engine' is the actual open line to Supabase
 engine = create_engine(DATABASE_URL)
 
+# In backend/database.py
+
 def get_db_projects():
-    """
-    Connects to the database, selects all rows from 'projects', 
-    and returns them as a clean list of dictionaries.
-    """
     try:
         with engine.connect() as conn:
-            # Execute raw SQL
             result = conn.execute(text("SELECT * FROM projects ORDER BY id DESC"))
             
-            # Convert the database rows into a Python List
             projects = []
             for row in result.mappings():
-                projects.append(dict(row))
+                row_dict = dict(row)
+                
+                # --- FIX: Manually clean the tech_stack ---
+                tech = row_dict.get('tech_stack')
+                
+                # If Postgres sent it as a string "{SQL,Supabase}", parse it
+                if isinstance(tech, str):
+                    # Remove curly braces and quotes
+                    clean_str = tech.replace('{', '').replace('}', '').replace('"', '')
+                    # Convert to list
+                    if clean_str:
+                        row_dict['tech_stack'] = [t.strip() for t in clean_str.split(',')]
+                    else:
+                        row_dict['tech_stack'] = []
+                        
+                # If it's None, make it an empty list
+                elif tech is None:
+                    row_dict['tech_stack'] = []
+                
+                # If it's already a list (which sometimes happens), leave it alone.
+                
+                projects.append(row_dict)
                 
             return projects
     except Exception as e:
