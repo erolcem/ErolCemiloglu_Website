@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from database import get_db_projects
 
 app = FastAPI()
 
@@ -37,6 +38,7 @@ skill_data = {
 }
 
 
+'''
 # --- PROJECT DATA ---
 project_data = [
     {
@@ -70,11 +72,12 @@ project_data = [
         "image": "/TrustProject.png"
     }
 ]
-
+'''
 
 @app.get("/api/projects")
 def get_projects():
-    return project_data
+    # Fetch real data from the database
+    return get_db_projects()
 
 @app.get("/")
 def read_root():
