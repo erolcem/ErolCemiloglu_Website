@@ -5,9 +5,9 @@ from pydantic import BaseModel
 app = FastAPI()
 
 # --- CORS SETTINGS ---
-# This tells the backend: "It's okay if requests come from localhost:3000"
+# This tells the backend: "It's okay if requests come from anywhere"
 origins = [
-    "http://localhost:3000",
+    "*",
 ]
 
 app.add_middleware(
