@@ -3,16 +3,19 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-// Define the shape of a single project
+// 1. UPDATE INTERFACE TO MATCH DATABASE COLUMNS
 interface Project {
   id: number;
   title: string;
   category: string;
-  date: string;
   description: string;
-  tech: string[];
+  // Database sends 'tech_stack', not 'tech'
+  tech_stack: string[]; 
+  // Database sends 'image_path', not 'image'
+  image_path: string; 
   link: string;
-  image: string;
+  // Optional: If you didn't create a date column, we handle it below
+  created_at?: string; 
 }
 
 export default function ProjectsPage() {
@@ -24,6 +27,7 @@ export default function ProjectsPage() {
     fetch(`${API_URL}/api/projects`)
       .then((res) => res.json())
       .then((data) => {
+        console.log("Database Data:", data); // Helpful for debugging
         setProjects(data);
         setLoading(false);
       })
@@ -41,24 +45,19 @@ export default function ProjectsPage() {
           {projects.map((project) => (
             <div key={project.id} className="group bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden hover:border-blue-500 transition-all duration-300">
 
-              {/* Visual Header - UPDATED LOGIC */}
+              {/* Visual Header */}
               <div className="h-48 bg-neutral-800 w-full flex items-center justify-center text-neutral-600 group-hover:bg-neutral-800/80 transition-colors relative overflow-hidden">
                  
-                 {/* Check if it's a real image path (starts with /) */}
-                 {project.image.startsWith('/') ? (
-                    /* Note: We use standard <img> tag here for simplicity. 
-                       Next.js has a specialized <Image/> component for optimization we can use later. */
+                 {/* 2. USE 'image_path' INSTEAD OF 'image' */}
+                 {project.image_path && project.image_path.startsWith('/') ? (
                     <img 
-                      src={project.image} 
+                      src={project.image_path} 
                       alt={project.title} 
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                     />
                  ) : (
-                    /* Otherwise, show placeholders based on keywords */
-                    <>
-                     {project.image === 'video' && <span>[ 🎥 Robot Demo Video ]</span>}
-                     {project.image === 'code' && <span>[ 💻 Source Code Preview ]</span>}
-                    </>
+                    /* Fallback for no image */
+                    <span className="text-4xl">🤖</span>
                  )}
 
               </div>
@@ -67,7 +66,10 @@ export default function ProjectsPage() {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                     <div>
-                        <span className="text-xs font-mono text-blue-400 mb-1 block">{project.category} // {project.date}</span>
+                        {/* Use 'created_at' or a static year if date is missing */}
+                        <span className="text-xs font-mono text-blue-400 mb-1 block">
+                            {project.category} // {project.created_at ? new Date(project.created_at).getFullYear() : '2024'}
+                        </span>
                         <h2 className="text-2xl font-bold text-gray-100">{project.title}</h2>
                     </div>
                 </div>
@@ -76,17 +78,21 @@ export default function ProjectsPage() {
                     {project.description}
                 </p>
 
-                {/* Tech Stack Tags */}
+                {/* Tech Stack Tags - WITH SAFETY CHECK */}
                 <div className="flex flex-wrap gap-2 mb-6">
-                    {project.tech.map((t, i) => (
-                        <span key={i} className="px-2 py-1 bg-neutral-800 text-neutral-300 text-xs rounded border border-neutral-700">
-                            {t}
-                        </span>
-                    ))}
+                    {/* 3. USE 'tech_stack' AND ADD SAFETY CHECK */}
+                    {Array.isArray(project.tech_stack) ? (
+                        project.tech_stack.map((t, i) => (
+                            <span key={i} className="px-2 py-1 bg-neutral-800 text-neutral-300 text-xs rounded border border-neutral-700">
+                                {t}
+                            </span>
+                        ))
+                    ) : (
+                        <span className="text-xs text-gray-600">Stack info unavailable</span>
+                    )}
                 </div>
 
-                {/* Link Button */}
-                <Link href={project.link} target="_blank" className="inline-flex items-center text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">
+                <Link href={project.link || '#'} target="_blank" className="inline-flex items-center text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">
                     View Documentation 
                     <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                 </Link>
