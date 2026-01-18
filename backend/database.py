@@ -50,6 +50,8 @@ def clean_tech_stack(raw_data):
 
     return []
 
+# Inside backend/database.py
+
 def get_db_projects():
     try:
         with engine.connect() as conn:
@@ -57,12 +59,18 @@ def get_db_projects():
             
             projects = []
             for row in result.mappings():
-                # Convert the database row to a mutable dictionary
                 row_dict = dict(row)
                 
-                # --- APPLY THE CLEANER ---
-                # We overwrite the raw data with our clean list
-                row_dict['tech_stack'] = clean_tech_stack(row_dict.get('tech_stack'))
+                # --- FIX: Handle Column Name Mismatch ---
+                # Check for "tech_stack" OR "tech stack" (with space)
+                raw_tech = row_dict.get('tech_stack') or row_dict.get('tech stack')
+                
+                # Clean the data using our helper
+                row_dict['tech_stack'] = clean_tech_stack(raw_tech)
+                
+                # Optional: Remove the awkward key with the space to keep JSON clean
+                if 'tech stack' in row_dict:
+                    del row_dict['tech stack']
                 
                 projects.append(row_dict)
                 
