@@ -3,30 +3,37 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+// 1. Interface matches what we expect from the backend
 interface Project {
   id: number;
   title: string;
   category: string;
   description: string;
-  tech_stack: string | string[]; // <--- Update type to accept both
+  tech_stack: string | string[]; // Accepts raw strings OR arrays
   image_path: string; 
   link: string;
   created_at?: string; 
 }
 
-// --- HELPER: Cleans up messy database data ---
+// 2. The "Safety Net" Helper Function
+// This forces ANY data format into a clean Array of strings
 const parseTechStack = (stack: string | string[] | null | undefined): string[] => {
-  // 1. If it's empty, return empty list
+  // A. If it's missing or empty, return empty list
   if (!stack) return [];
 
-  // 2. If it's already an Array, return it
+  // B. If it's already a List (Perfect!), return it
   if (Array.isArray(stack)) return stack;
 
-  // 3. If it's a String (The likely culprit)
+  // C. If it's a String (The messy part)
   if (typeof stack === 'string') {
-    // Handle Postgres format "{Python,SQL}" by removing curly braces
-    const cleanString = stack.replace(/{/g, '').replace(/}/g, '').replace(/"/g, '');
-    // Split by comma and remove extra whitespace
+    // Regex explanation:
+    // / ... /g  -> Global search (find all matches)
+    // [ ... ]   -> Match any character inside these brackets
+    // { } [ ] " ' -> The characters we want to delete
+    // \ acts as an escape character for special regex symbols
+    const cleanString = stack.replace(/[{\}\[\]"']/g, '');
+    
+    // Split by comma, trim whitespace, and ignore empty strings
     return cleanString.split(',').map(s => s.trim()).filter(s => s.length > 0);
   }
 
@@ -38,15 +45,25 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 3. Fetch Data
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    
+    console.log(`Fetching from: ${API_URL}/api/projects`); // Debug Log 1
+
     fetch(`${API_URL}/api/projects`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
-        console.log("Raw Data:", data); 
+        console.log("Database Data Received:", data); // Debug Log 2
         setProjects(data);
         setLoading(false);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error("Fetch Failed:", err);
+        setLoading(false);
+      });
   }, []);
 
   if (loading) return <div className="min-h-screen bg-black text-white p-24">Loading Projects...</div>;
@@ -58,7 +75,7 @@ export default function ProjectsPage() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {projects.map((project) => {
-            // Use the helper to get a clean array
+            // 4. Clean the stack data right before rendering
             const safeTechStack = parseTechStack(project.tech_stack);
 
             return (
@@ -67,12 +84,14 @@ export default function ProjectsPage() {
                 {/* Visual Header */}
                 <div className="h-48 bg-neutral-800 w-full flex items-center justify-center text-neutral-600 group-hover:bg-neutral-800/80 transition-colors relative overflow-hidden">
                    {project.image_path && project.image_path.startsWith('/') ? (
+                      /* If using standard <img> tag */
                       <img 
                         src={project.image_path} 
                         alt={project.title} 
                         className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                       />
                    ) : (
+                      /* Fallback Icon */
                       <span className="text-4xl">🤖</span>
                    )}
                 </div>
@@ -92,7 +111,7 @@ export default function ProjectsPage() {
                       {project.description}
                   </p>
 
-                  {/* Tech Stack Tags - USING THE HELPER */}
+                  {/* Tech Stack Tags - Using the Clean Data */}
                   <div className="flex flex-wrap gap-2 mb-6">
                       {safeTechStack.length > 0 ? (
                           safeTechStack.map((t, i) => (
@@ -101,7 +120,7 @@ export default function ProjectsPage() {
                               </span>
                           ))
                       ) : (
-                          <span className="text-xs text-gray-600">No stack data</span>
+                          <span className="text-xs text-gray-600">Stack info unavailable</span>
                       )}
                   </div>
 
