@@ -1,23 +1,54 @@
 import os
+import json # <--- Added this to handle JSON strings
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
-# 1. Load environment variables (gets your password from .env)
 load_dotenv()
 
-# 2. Get the connection string
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Compatibility Fix: Render/Supabase sometimes give "postgres://", 
-# but SQLAlchemy needs "postgresql://"
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-# 3. Create the Connection Engine
-# This 'engine' is the actual open line to Supabase
 engine = create_engine(DATABASE_URL)
 
-# In backend/database.py
+def clean_tech_stack(raw_data):
+    """
+    The 'God Mode' parser. 
+    Converts literally any format (Postgres string, JSON string, List, None) 
+    into a clean Python List.
+    """
+    # Case 1: It's empty
+    if raw_data is None:
+        return []
+
+    # Case 2: It's already a List (Perfect!)
+    if isinstance(raw_data, list):
+        return raw_data
+
+    # Case 3: It's a String
+    if isinstance(raw_data, str):
+        raw_data = raw_data.strip()
+        
+        # Sub-case A: Postgres Array format "{SQL, Python}"
+        if raw_data.startswith('{') and raw_data.endswith('}'):
+            # Strip braces and quotes
+            cleaned = raw_data.strip('{}').replace('"', '')
+            return [t.strip() for t in cleaned.split(',') if t.strip()]
+        
+        # Sub-case B: JSON Array format "["SQL", "Python"]"
+        # (This happens if you pasted data directly into Supabase UI)
+        elif raw_data.startswith('[') and raw_data.endswith(']'):
+            try:
+                return json.loads(raw_data)
+            except:
+                return []
+                
+        # Sub-case C: Just commas "SQL, Python"
+        else:
+            return [t.strip() for t in raw_data.split(',') if t.strip()]
+
+    return []
 
 def get_db_projects():
     try:
@@ -26,26 +57,12 @@ def get_db_projects():
             
             projects = []
             for row in result.mappings():
+                # Convert the database row to a mutable dictionary
                 row_dict = dict(row)
                 
-                # --- FIX: Manually clean the tech_stack ---
-                tech = row_dict.get('tech_stack')
-                
-                # If Postgres sent it as a string "{SQL,Supabase}", parse it
-                if isinstance(tech, str):
-                    # Remove curly braces and quotes
-                    clean_str = tech.replace('{', '').replace('}', '').replace('"', '')
-                    # Convert to list
-                    if clean_str:
-                        row_dict['tech_stack'] = [t.strip() for t in clean_str.split(',')]
-                    else:
-                        row_dict['tech_stack'] = []
-                        
-                # If it's None, make it an empty list
-                elif tech is None:
-                    row_dict['tech_stack'] = []
-                
-                # If it's already a list (which sometimes happens), leave it alone.
+                # --- APPLY THE CLEANER ---
+                # We overwrite the raw data with our clean list
+                row_dict['tech_stack'] = clean_tech_stack(row_dict.get('tech_stack'))
                 
                 projects.append(row_dict)
                 
