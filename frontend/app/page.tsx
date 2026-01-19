@@ -23,6 +23,13 @@ export default function Home() {
           Building autonomous systems and scalable digital infrastructure.
         </p>
 
+
+        <div className="mb-6 flex justify-center">
+            <span className="px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-mono uppercase tracking-widest">
+                System Online
+            </span>
+        </div>
+
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
                 href="/projects"
@@ -37,6 +44,8 @@ export default function Home() {
                 Initiate Contact
             </Link>
         </div>
+
+
       </div>
     </main>
   );
