@@ -35,13 +35,22 @@ export default function Home() {
                 href="/projects"
                 className="px-8 py-3 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
             >
-                View Documentation
+                My projects
             </Link>
             <Link 
                 href="/contact"
                 className="px-8 py-3 rounded-lg border border-neutral-700 text-gray-300 hover:bg-neutral-800 transition-colors"
             >
-                Initiate Contact
+                Explore
+            </Link>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+                href="/skills"
+                className="px-8 py-3 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
+            >
+                My skills
             </Link>
         </div>
 
