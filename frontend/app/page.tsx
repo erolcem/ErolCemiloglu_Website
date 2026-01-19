@@ -6,27 +6,22 @@ export default function Home() {
       
       {/* Background Grid Effect */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
-
-      <div className="z-10 text-center max-w-3xl">
-        <div className="mb-6 flex justify-center">
-            <span className="px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-mono uppercase tracking-widest">
-                System Online
-            </span>
-        </div>
         
         <h1 className="text-6xl md:text-8xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-500 mb-6">
           Erol Cemiloglu
         </h1>
         
         <p className="text-xl text-gray-400 mb-8 leading-relaxed">
-          Robotics Engineer & Full Stack Developer.<br/>
-          Building autonomous systems and scalable digital infrastructure.
+          Robotics & Systems Engineer.<br/>
+          Bachelor of Electrical & Computer Systems Engineering (Honours)
+          Minor in Chemical Engineering: Micro & Nano Technologies
+          Monash University
         </p>
 
 
         <div className="mb-6 flex justify-center">
             <span className="px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-mono uppercase tracking-widest">
-                System Online
+                Please give 40 seconds for backend to startup
             </span>
         </div>
 
