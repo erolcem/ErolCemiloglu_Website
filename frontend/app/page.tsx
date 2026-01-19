@@ -6,15 +6,17 @@ export default function Home() {
       
       {/* Background Grid Effect */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
+
+      <div className="z-10 text-center max-w-3xl">
         
         <h1 className="text-6xl md:text-8xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-500 mb-6">
           Erol Cemiloglu
         </h1>
         
         <p className="text-xl text-gray-400 mb-8 leading-relaxed">
-          Robotics & Systems Engineer.<br/>
-          Bachelor of Electrical & Computer Systems Engineering (Honours)
-          Minor in Chemical Engineering: Micro & Nano Technologies
+          Robotics & Systems Engineer<br/>
+          Bachelor of Electrical & Computer Systems Engineering (Honours)<br/>
+          Minor in Chemical Engineering: Micro & Nano Technologies<br/>
           Monash University
         </p>
 
