@@ -1,99 +1,77 @@
-"use client"; // <--- This is mandatory for data fetching in Next.js App Router
-
+"use client";
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-// Define the shape of the data we expect from Python
-// This is TypeScript: It prevents bugs by ensuring we know what data looks like.
-interface SkillData {
-  featured: {
-    title: string;
-    desc: string;
-    tags: string[];
-  };
-  stack: { name: string; level: string; color: string }[];
-  hardware: string[];
-  languages: string[];
+interface SkillBox {
+  id: number;
+  title: string;
+  category: string;
+  image_path?: string;
+  link?: string;
+  is_wide: boolean; // Controls the box size
 }
 
-export default function SkillsPage() {
-  // STATE: This is where we store the data once we get it.
-  const [data, setData] = useState<SkillData | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function SkillsBento() {
+  const [skills, setSkills] = useState<SkillBox[]>([]);
 
-  // EFFECT: This runs ONCE when the page loads.
   useEffect(() => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     fetch(`${API_URL}/api/skills`)
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setLoading(false);
-      })
-      .catch((error) => console.error("Error fetching skills:", error));
+      .then(res => res.json())
+      .then(data => setSkills(data))
+      .catch(err => console.error(err));
   }, []);
 
-  // Show a loading text while waiting for Python
-  if (loading) return <div className="min-h-screen bg-black text-white p-24">Loading System Data...</div>;
-  if (!data) return <div className="min-h-screen bg-black text-white p-24">Error loading data.</div>;
-
   return (
-    <main className="min-h-screen bg-black text-white p-8 pt-24">
+    <div className="min-h-screen bg-black text-white p-8 pt-24">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-gray-100">Technical Arsenal</h1>
+        <h1 className="text-4xl font-bold mb-12 text-gray-100">Skill Arsenal</h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* THE BENTO GRID */}
+        {/* auto-rows-fr ensures boxes stretch to fill gaps */}
+        <div className="grid grid-cols-1 md:grid-cols-3 auto-rows-[180px] gap-4">
+          
+          {skills.map((skill) => (
+            <div 
+              key={skill.id}
+              // DYNAMIC CLASS: If is_wide is true, span 2 columns. Otherwise span 1.
+              className={`
+                group relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 p-6 transition-all hover:border-blue-500/50 hover:bg-neutral-800
+                ${skill.is_wide ? 'md:col-span-2' : 'md:col-span-1'}
+              `}
+            >
+              
+              {/* Optional Background Image (Faded) */}
+              {skill.image_path && (
+                <img 
+                  src={skill.image_path} 
+                  className="absolute right-0 bottom-0 w-32 h-32 object-contain opacity-5 grayscale group-hover:opacity-20 group-hover:scale-110 transition-all duration-500" 
+                />
+              )}
 
-          {/* DYNAMIC BLOCK 1: Featured */}
-          <div className="col-span-1 md:col-span-2 row-span-2 bg-neutral-900 border border-neutral-800 rounded-xl p-6 hover:border-blue-500 transition-colors">
-            <h2 className="text-2xl font-bold text-blue-400 mb-2">{data.featured.title}</h2>
-            <p className="text-gray-400 mb-4">{data.featured.desc}</p>
-            <div className="w-full h-48 bg-neutral-800 rounded-lg flex items-center justify-center text-neutral-600">
-               [Video Placeholder]
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div>
+                  <span className="text-xs font-mono text-blue-400 mb-2 block">{skill.category}</span>
+                  <h3 className="text-2xl font-bold text-gray-100">{skill.title}</h3>
+                </div>
+
+                {/* Optional Evidence Link */}
+                {skill.link && (
+                  <Link 
+                    href={skill.link} 
+                    target="_blank"
+                    className="self-start inline-flex items-center text-sm text-neutral-400 hover:text-white mt-4"
+                  >
+                    View Proof 
+                    <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                  </Link>
+                )}
+              </div>
             </div>
-            <div className="mt-4 flex flex-wrap gap-2">
-                {/* We loop through the tags list from Python */}
-                {data.featured.tags.map((tag, index) => (
-                    <span key={index} className="px-3 py-1 bg-blue-900/30 text-blue-200 text-xs rounded-full border border-blue-800">
-                        {tag}
-                    </span>
-                ))}
-            </div>
-          </div>
-
-          {/* DYNAMIC BLOCK 2: Stack */}
-          <div className="col-span-1 bg-neutral-900 border border-neutral-800 rounded-xl p-6 hover:border-green-500 transition-colors">
-            <h2 className="text-xl font-bold text-green-400 mb-2">Software Stack</h2>
-            <ul className="space-y-2 text-gray-300">
-              {data.stack.map((item, index) => (
-                <li key={index} className="flex justify-between border-b border-neutral-800 pb-1">
-                    <span>{item.name}</span> <span className={`${item.color} font-mono`}>{item.level}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* DYNAMIC BLOCK 3: Hardware */}
-          <div className="col-span-1 bg-neutral-900 border border-neutral-800 rounded-xl p-6 hover:border-purple-500 transition-colors">
-            <h2 className="text-xl font-bold text-purple-400 mb-2">Hardware Access</h2>
-            <div className="flex flex-wrap gap-2">
-                {data.hardware.map((tool, index) => (
-                    <span key={index} className="bg-neutral-800 px-2 py-1 rounded text-sm">{tool}</span>
-                ))}
-            </div>
-          </div>
-
-           {/* DYNAMIC BLOCK 4: Languages */}
-           <div className="col-span-1 bg-neutral-900 border border-neutral-800 rounded-xl p-6 hover:border-orange-500 transition-colors">
-            <h2 className="text-xl font-bold text-orange-400 mb-2">Languages</h2>
-             <ul className="text-sm text-gray-300 space-y-1">
-                {data.languages.map((lang, index) => (
-                    <li key={index}>{lang}</li>
-                ))}
-             </ul>
-          </div>
+          ))}
 
         </div>
       </div>
-    </main>
+    </div>
   );
 }

@@ -78,3 +78,21 @@ def get_db_projects():
     except Exception as e:
         print(f"Database Error: {e}")
         return []
+    
+
+def get_db_skills():
+    try:
+        with engine.connect() as conn:
+            # Fetch all skills
+            result = conn.execute(text("SELECT * FROM skills ORDER BY id ASC"))
+            
+            skills = []
+            for row in result.mappings():
+                # No complex parsing needed anymore!
+                # The data structure is already perfect for the grid.
+                skills.append(dict(row))
+                
+            return skills
+    except Exception as e:
+        print(f"Database Error: {e}")
+        return []
