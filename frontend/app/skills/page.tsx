@@ -19,27 +19,12 @@ export default function SkillsBento() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     
     fetch(`${API_URL}/api/skills`)
-      .then((res) => {
-        // 1. Check if the request actually worked
-        if (!res.ok) {
-           throw new Error(`API Error: ${res.status}`);
-        }
-        return res.json();
-      })
+      .then((res) => { if (!res.ok) throw new Error('API Error'); return res.json(); })
       .then((data) => {
-        // 2. Safety Check: Is it actually an Array?
-        if (Array.isArray(data)) {
-            setSkills(data);
-        } else {
-            console.error("Data is not a list:", data);
-            setSkills([]); // Fallback to empty list
-        }
+        if (Array.isArray(data)) setSkills(data);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error("Fetch failed:", err);
-        setLoading(false);
-      });
+      .catch((err) => { console.error(err); setLoading(false); });
   }, []);
 
   if (loading) return <div className="min-h-screen bg-black text-white p-24">Loading Skills...</div>;
@@ -47,42 +32,43 @@ export default function SkillsBento() {
   return (
     <div className="min-h-screen bg-black text-white p-8 pt-24">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-bold mb-12 text-gray-100">Skill Arsenal</h1>
+        <h1 className="text-4xl font-bold mb-12 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+            Skill Arsenal
+        </h1>
         
         <div className="grid grid-cols-1 md:grid-cols-3 auto-rows-[180px] gap-4">
           
-          {/* 3. Render the grid (Now safe because 'skills' is guaranteed to be an array) */}
           {skills.map((skill) => (
             <div 
               key={skill.id}
               className={`
-                group relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 p-6 transition-all hover:border-blue-500/50 hover:bg-neutral-800
+                group relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 transition-all duration-500
+                hover:border-purple-500/50 hover:bg-neutral-800 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)]
                 ${skill.is_wide ? 'md:col-span-2' : 'md:col-span-1'}
               `}
             >
               
-              {/* Optional Background Image */}
+              {/* Background Image Effect */}
               {skill.image_path && (
                 <img 
                   src={skill.image_path} 
-                  className="absolute right-0 bottom-0 w-32 h-32 object-contain opacity-5 grayscale group-hover:opacity-20 group-hover:scale-110 transition-all duration-500" 
+                  className="absolute -right-4 -bottom-4 w-40 h-40 object-contain opacity-10 grayscale group-hover:opacity-30 group-hover:grayscale-0 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-500" 
                 />
               )}
 
               <div className="relative z-10 h-full flex flex-col justify-between">
                 <div>
-                  <span className="text-xs font-mono text-blue-400 mb-2 block">{skill.category}</span>
-                  <h3 className="text-2xl font-bold text-gray-100">{skill.title}</h3>
+                  <span className="text-xs font-mono text-purple-400 mb-2 block tracking-wider uppercase">{skill.category}</span>
+                  <h3 className="text-3xl font-bold text-gray-100 group-hover:text-white transition-colors">{skill.title}</h3>
                 </div>
 
-                {/* Optional Evidence Link */}
                 {skill.link && (
                   <Link 
                     href={skill.link} 
                     target="_blank"
-                    className="self-start inline-flex items-center text-sm text-neutral-400 hover:text-white mt-4"
+                    className="self-start inline-flex items-center text-xs font-bold text-neutral-500 uppercase tracking-widest group-hover:text-purple-400 transition-colors mt-4"
                   >
-                    View Proof 
+                    Evidence 
                     <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                   </Link>
                 )}
