@@ -52,7 +52,7 @@ export default function SkillsBento() {
               {skill.image_path && (
                 <img 
                   src={skill.image_path} 
-                  className="absolute -right-1 -bottom-8 w-64 h-64 object-contain opacity-80 grayscale group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-500" 
+                  className="absolute -left-4 -bottom-8 w-128 h-128 object-contain opacity-80 grayscale group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-500" 
                 />
               )}
 
