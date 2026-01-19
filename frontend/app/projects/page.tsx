@@ -70,19 +70,35 @@ export default function ProjectsPage() {
             return (
               <div key={project.id} className="group bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
 
-                {/* Visual Header */}
+                {/* Visual Header - Now Supports Images AND Videos */}
                 <div className="h-48 bg-neutral-800 w-full flex items-center justify-center text-neutral-600 group-hover:bg-neutral-800/80 transition-colors relative overflow-hidden">
-                   {project.image_path && project.image_path.startsWith('/') ? (
-                      <img 
-                        src={project.image_path} 
-                        alt={project.title} 
-                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                      />
-                   ) : (
-                      <span className="text-5xl group-hover:scale-110 transition-transform duration-300">⚡</span>
-                   )}
-                   {/* Gradient Overlay */}
-                   <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-transparent opacity-60"></div>
+                    
+                    {project.image_path ? (
+                        // CHECK: Is it a video?
+                        project.image_path.endsWith('.mp4') || project.image_path.endsWith('.webm') ? (
+                            <video
+                                src={project.image_path}
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                            />
+                        ) : (
+                            // OTHERWISE: It's an image
+                            <img 
+                                src={project.image_path} 
+                                alt={project.title} 
+                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                            />
+                        )
+                    ) : (
+                        // FALLBACK if field is NULL
+                        <span className="text-5xl group-hover:scale-110 transition-transform duration-300">⚡</span>
+                    )}
+                    
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-transparent opacity-60 pointer-events-none"></div>
                 </div>
 
                 {/* Content Body */}
