@@ -33,7 +33,7 @@ export default function SkillsBento() {
     <div className="min-h-screen bg-black text-white p-8 pt-24">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-4xl font-bold mb-12 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-            Skill Arsenal
+            Skills & Tools
         </h1>
         
         <div className="grid grid-cols-1 md:grid-cols-3 auto-rows-[180px] gap-4">

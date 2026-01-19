@@ -60,7 +60,7 @@ export default function ProjectsPage() {
     <main className="min-h-screen bg-black text-white p-8 pt-24">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-            Engineering Log
+            Projects and Experience
         </h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
