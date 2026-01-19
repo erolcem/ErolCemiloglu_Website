@@ -8,40 +8,60 @@ interface SkillBox {
   category: string;
   image_path?: string;
   link?: string;
-  is_wide: boolean; // Controls the box size
+  is_wide: boolean;
 }
 
 export default function SkillsBento() {
   const [skills, setSkills] = useState<SkillBox[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    
     fetch(`${API_URL}/api/skills`)
-      .then(res => res.json())
-      .then(data => setSkills(data))
-      .catch(err => console.error(err));
+      .then((res) => {
+        // 1. Check if the request actually worked
+        if (!res.ok) {
+           throw new Error(`API Error: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        // 2. Safety Check: Is it actually an Array?
+        if (Array.isArray(data)) {
+            setSkills(data);
+        } else {
+            console.error("Data is not a list:", data);
+            setSkills([]); // Fallback to empty list
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Fetch failed:", err);
+        setLoading(false);
+      });
   }, []);
+
+  if (loading) return <div className="min-h-screen bg-black text-white p-24">Loading Skills...</div>;
 
   return (
     <div className="min-h-screen bg-black text-white p-8 pt-24">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-4xl font-bold mb-12 text-gray-100">Skill Arsenal</h1>
         
-        {/* THE BENTO GRID */}
-        {/* auto-rows-fr ensures boxes stretch to fill gaps */}
         <div className="grid grid-cols-1 md:grid-cols-3 auto-rows-[180px] gap-4">
           
+          {/* 3. Render the grid (Now safe because 'skills' is guaranteed to be an array) */}
           {skills.map((skill) => (
             <div 
               key={skill.id}
-              // DYNAMIC CLASS: If is_wide is true, span 2 columns. Otherwise span 1.
               className={`
                 group relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 p-6 transition-all hover:border-blue-500/50 hover:bg-neutral-800
                 ${skill.is_wide ? 'md:col-span-2' : 'md:col-span-1'}
               `}
             >
               
-              {/* Optional Background Image (Faded) */}
+              {/* Optional Background Image */}
               {skill.image_path && (
                 <img 
                   src={skill.image_path} 
