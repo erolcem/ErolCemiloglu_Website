@@ -55,7 +55,7 @@ def clean_tech_stack(raw_data):
 def get_db_projects():
     try:
         with engine.connect() as conn:
-            result = conn.execute(text("SELECT * FROM projects ORDER BY id DESC"))
+            result = conn.execute(text("SELECT * FROM projects ORDER BY year DESC, id DESC"))
             
             projects = []
             for row in result.mappings():
