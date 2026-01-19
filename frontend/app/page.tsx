@@ -14,7 +14,7 @@ export default function Home() {
         </h1>
         
         <p className="text-xl text-gray-400 mb-8 leading-relaxed">
-          Robotics & Systems Engineer<br/>
+          Robotics & Systems Engineer<hr />
           Bachelor of Electrical & Computer Systems Engineering (Honours)<br/>
           Minor in Chemical Engineering: Micro & Nano Technologies<br/>
           Monash University
