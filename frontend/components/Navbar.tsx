@@ -49,7 +49,7 @@ export default function Navbar() {
                 onClick={() => setIsOpen(false)}
                 className="block py-2 px-3 text-gray-300 rounded hover:bg-gray-700 md:hover:bg-transparent md:border-0 md:hover:text-blue-500 md:p-0"
               >
-                Skills
+                Skillss
               </Link>
             </li>
             <li>
