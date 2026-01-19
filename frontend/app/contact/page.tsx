@@ -9,8 +9,8 @@ export default function ContactPage() {
         <div className="mb-12 text-center">
             <h1 className="text-5xl font-bold text-gray-100 tracking-tight">Connect</h1>
             <p className="text-gray-400 mt-4 text-lg">
-                Currently based in Melbourne, Australia. <br/>
-                Available for robotics engineering and full-stack collaborations.
+                Based in Melbourne, Australia. <br/>
+                Available for engineering collaborations.
             </p>
         </div>
 
