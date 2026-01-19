@@ -33,24 +33,24 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
                 href="/projects"
-                className="px-8 py-3 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
+                className="px-8 py-3 rounded-lg border border-neutral-700 text-gray-300 hover:bg-neutral-800 transition-colors"
             >
                 My projects
             </Link>
             <Link 
-                href="/contact"
+                href="/skills"
                 className="px-8 py-3 rounded-lg border border-neutral-700 text-gray-300 hover:bg-neutral-800 transition-colors"
             >
-                Explore
+                My skills
             </Link>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
-                href="/skills"
+                href="/contact"
                 className="px-8 py-3 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
             >
-                My skills
+                Contact Me
             </Link>
         </div>
 
