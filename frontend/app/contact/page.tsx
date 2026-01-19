@@ -19,7 +19,7 @@ export default function ContactPage() {
 
           {/* BLOCK 1: Email (Primary Action) */}
           <a 
-            href="mailto:your.email@gmail.com"
+            href="mailto:erolcem211@gmail.com"
             className="col-span-1 md:col-span-2 group bg-neutral-900 border border-neutral-800 rounded-3xl p-10 flex flex-col md:flex-row items-center justify-between hover:border-blue-500 hover:shadow-lg hover:shadow-blue-900/20 transition-all duration-300"
           >
             <div className="flex items-center gap-6 mb-4 md:mb-0">
@@ -29,7 +29,7 @@ export default function ContactPage() {
                 </div>
                 <div className="text-center md:text-left">
                     <h3 className="text-2xl font-bold text-gray-100">Send Email</h3>
-                    <p className="text-gray-500 group-hover:text-gray-400 transition-colors">your.email@gmail.com</p>
+                    <p className="text-gray-500 group-hover:text-gray-400 transition-colors">erolcem211@gmail.com</p>
                 </div>
             </div>
             <span className="px-6 py-2 bg-neutral-800 rounded-full text-sm font-medium text-gray-300 group-hover:bg-white group-hover:text-black transition-colors">
@@ -39,7 +39,7 @@ export default function ContactPage() {
 
           {/* BLOCK 2: LinkedIn */}
           <Link 
-            href="https://linkedin.com/in/your-profile" 
+            href="https://www.linkedin.com/in/erol-cemiloglu-c11134" 
             target="_blank"
             className="group bg-[#0077b5] border border-transparent rounded-3xl p-8 flex flex-col justify-between h-64 hover:scale-[1.02] transition-transform shadow-lg shadow-blue-900/20"
           >
@@ -57,7 +57,7 @@ export default function ContactPage() {
 
           {/* BLOCK 3: GitHub */}
           <Link 
-            href="https://github.com/your-username" 
+            href="https://github.com/erolcem" 
             target="_blank"
             className="group bg-neutral-900 border border-neutral-800 rounded-3xl p-8 flex flex-col justify-between h-64 hover:border-white hover:bg-neutral-800 transition-all"
           >
