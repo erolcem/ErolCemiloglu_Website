@@ -66,6 +66,7 @@ export default function ProjectsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {projects.map((project) => {
             const safeTechStack = parseTechStack(project.tech_stack);
+            console.log(`Project: ${project.title}, Loading Media: ${project.image_path}`);
 
             return (
               <div key={project.id} className="group bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
