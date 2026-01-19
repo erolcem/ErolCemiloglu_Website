@@ -43,9 +43,7 @@ export default function Home() {
             >
                 My skills
             </Link>
-        </div>
 
-        <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
                 href="/contact"
                 className="px-8 py-3 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
@@ -53,8 +51,6 @@ export default function Home() {
                 Contact Me
             </Link>
         </div>
-
-
       </div>
     </main>
   );
