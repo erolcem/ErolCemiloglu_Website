@@ -13,6 +13,7 @@ interface Project {
   image_path: string; 
   link: string;
   created_at?: string; 
+  year: string;
 }
 
 // 2. The "Safety Net" Helper Function
@@ -101,7 +102,7 @@ export default function ProjectsPage() {
                   <div className="flex justify-between items-start mb-4">
                       <div>
                           <span className="text-xs font-mono text-blue-400 mb-1 block">
-                              {project.category} // {project.created_at ? new Date(project.created_at).getFullYear() : '2024'}
+                              {project.category} // {project.year || '2025'}
                           </span>
                           <h2 className="text-2xl font-bold text-gray-100">{project.title}</h2>
                       </div>
