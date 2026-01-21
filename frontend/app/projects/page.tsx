@@ -144,7 +144,7 @@ export default function ProjectsPage() {
           })}
         </div>
         
-        <h3 className="text-xl font-bold mb-32 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+        <h3 className="text-xl font-bold mb-50 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
             For my full experience timeline (including non-technical experience) please visit my linkedIn.
         </h3>
 
