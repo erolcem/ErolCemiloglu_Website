@@ -144,8 +144,8 @@ export default function ProjectsPage() {
           })}
         </div>
         
-        <h3 className="text-xl font-bold mb-22 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-            For full experience timeline (including non-technical experience) please visit my linkedIn.
+        <h3 className="text-xl font-bold mb-32 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+            For my full experience timeline (including non-technical experience) please visit my linkedIn.
         </h3>
 
       </div>
