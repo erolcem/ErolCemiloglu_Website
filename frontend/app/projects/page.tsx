@@ -18,9 +18,9 @@ interface Project {
 const getTechColor = (tech: string) => {
   const t = tech.toLowerCase();
   if (t.includes('python')) return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50';
-  if (t.includes('react') || t.includes('next')) return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50';
-  if (t.includes('rust')) return 'bg-orange-500/20 text-orange-300 border-orange-500/50';
-  if (t.includes('c++') || t.includes('cpp')) return 'bg-blue-600/20 text-blue-300 border-blue-500/50';
+  if (t.includes('b') || t.includes('next')) return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50';
+  if (t.includes('l')) return 'bg-orange-500/20 text-orange-300 border-orange-500/50';
+  if (t.includes('c') || t.includes('cpp')) return 'bg-blue-600/20 text-blue-300 border-blue-500/50';
   if (t.includes('sql') || t.includes('data')) return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50';
   if (t.includes('ros') || t.includes('robot')) return 'bg-red-500/20 text-red-300 border-red-500/50';
   
