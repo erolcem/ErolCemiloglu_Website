@@ -1,24 +1,24 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 export async function toggleProjectPublic(id: number, currentValue: boolean) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   await supabase.from('projects').update({ is_public: !currentValue }).eq('id', id)
   revalidatePath('/ec-admin/projects')
 }
 
 export async function deleteProject(id: number) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   await supabase.from('item_todos').delete().eq('entity_type', 'project').eq('entity_id', id)
   await supabase.from('projects').delete().eq('id', id)
   revalidatePath('/ec-admin/projects')
 }
 
 export async function createProject(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const techRaw = (formData.get('tech_stack') as string) ?? ''
   const techArray = techRaw.split(',').map(t => t.trim()).filter(Boolean)
@@ -45,7 +45,7 @@ export async function createProject(formData: FormData) {
 }
 
 export async function updateProject(id: number, formData: FormData) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const techRaw = (formData.get('tech_stack') as string) ?? ''
   const techArray = techRaw.split(',').map(t => t.trim()).filter(Boolean)
@@ -72,19 +72,19 @@ export async function updateProject(id: number, formData: FormData) {
 }
 
 export async function addTodo(entityType: 'project' | 'skill', entityId: number, title: string) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   await supabase.from('item_todos').insert({ entity_type: entityType, entity_id: entityId, title })
   revalidatePath(`/ec-admin/projects/${entityId}`)
 }
 
 export async function toggleTodo(todoId: number, currentDone: boolean, projectId: number) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   await supabase.from('item_todos').update({ is_done: !currentDone }).eq('id', todoId)
   revalidatePath(`/ec-admin/projects/${projectId}`)
 }
 
 export async function deleteTodo(todoId: number, projectId: number) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   await supabase.from('item_todos').delete().eq('id', todoId)
   revalidatePath(`/ec-admin/projects/${projectId}`)
 }
