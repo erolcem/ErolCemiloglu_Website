@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import ProjectForm from '../_components/ProjectForm'
 import TodoList from '../_components/TodoList'
 import { updateProject } from '../actions'
@@ -11,7 +11,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
   const { id } = await params
   const projectId = parseInt(id)
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const [{ data: project }, { data: todos }] = await Promise.all([
     supabase.from('projects').select('*').eq('id', projectId).single(),

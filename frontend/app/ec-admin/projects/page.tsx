@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import ProjectRow from './_components/ProjectRow'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminProjectsPage() {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data: projects } = await supabase
     .from('projects')
     .select('id, title, category, year, is_public')
