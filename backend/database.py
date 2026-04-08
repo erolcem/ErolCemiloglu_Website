@@ -61,16 +61,9 @@ def get_db_projects():
             for row in result.mappings():
                 row_dict = dict(row)
                 
-                # --- FIX: Handle Column Name Mismatch ---
-                # Check for "tech_stack" OR "tech stack" (with space)
-                raw_tech = row_dict.get('tech_stack') or row_dict.get('tech stack')
-                
-                # Clean the data using our helper
+                # Column was renamed from "tech stack" to "tech_stack" in Supabase
+                raw_tech = row_dict.get('tech_stack')
                 row_dict['tech_stack'] = clean_tech_stack(raw_tech)
-                
-                # Optional: Remove the awkward key with the space to keep JSON clean
-                if 'tech stack' in row_dict:
-                    del row_dict['tech stack']
                 
                 projects.append(row_dict)
                 
