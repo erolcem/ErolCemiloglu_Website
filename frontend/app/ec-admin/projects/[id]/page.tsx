@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/admin'
 import ProjectForm from '../_components/ProjectForm'
-import TodoList from '../_components/TodoList'
+import TodoList from '@/components/admin/TodoList'
 import { updateProject } from '../actions'
 
 export const dynamic = 'force-dynamic'
