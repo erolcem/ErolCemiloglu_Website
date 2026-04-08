@@ -9,7 +9,6 @@ const NAV_ITEMS = [
   { href: '/ec-admin/projects', label: 'Projects' },
   { href: '/ec-admin/skills', label: 'Skills' },
   { href: '/ec-admin/todos', label: 'Todos' },
-  { href: '/ec-admin/career-ops', label: 'Career Ops' },
 ]
 
 export default function AdminSidebar() {

@@ -3,13 +3,15 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
-function revalidateAll(entityType: 'project' | 'skill', entityId: number) {
+type EntityType = 'project' | 'skill' | 'general'
+
+function revalidateAll(entityType: EntityType, entityId: number | null) {
   revalidatePath('/ec-admin/todos')
-  if (entityType === 'project') revalidatePath(`/ec-admin/projects/${entityId}`)
-  if (entityType === 'skill') revalidatePath(`/ec-admin/skills/${entityId}`)
+  if (entityType === 'project' && entityId) revalidatePath(`/ec-admin/projects/${entityId}`)
+  if (entityType === 'skill' && entityId) revalidatePath(`/ec-admin/skills/${entityId}`)
 }
 
-export async function addTodo(entityType: 'project' | 'skill', entityId: number, title: string) {
+export async function addTodo(entityType: EntityType, entityId: number | null, title: string) {
   const supabase = createAdminClient()
   const { error } = await supabase
     .from('item_todos')
@@ -24,8 +26,8 @@ export async function addTodo(entityType: 'project' | 'skill', entityId: number,
 export async function toggleTodo(
   todoId: number,
   currentDone: boolean,
-  entityType: 'project' | 'skill',
-  entityId: number
+  entityType: EntityType,
+  entityId: number | null
 ) {
   const supabase = createAdminClient()
   const { error } = await supabase
@@ -38,8 +40,8 @@ export async function toggleTodo(
 
 export async function deleteTodo(
   todoId: number,
-  entityType: 'project' | 'skill',
-  entityId: number
+  entityType: EntityType,
+  entityId: number | null
 ) {
   const supabase = createAdminClient()
   const { error } = await supabase.from('item_todos').delete().eq('id', todoId)

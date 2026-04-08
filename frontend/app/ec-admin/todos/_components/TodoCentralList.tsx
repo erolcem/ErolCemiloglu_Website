@@ -11,8 +11,8 @@ interface Todo {
 
 interface Props {
   todos: Todo[]
-  entityType: 'project' | 'skill'
-  entityId: number
+  entityType: 'project' | 'skill' | 'general'
+  entityId: number | null
 }
 
 export default function TodoCentralList({ todos, entityType, entityId }: Props) {
