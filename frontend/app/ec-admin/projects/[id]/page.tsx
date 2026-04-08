@@ -47,7 +47,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
         action={updateWithId}
         defaultValues={{
           ...project,
-          tech_stack: Array.isArray(project.tech_stack) ? project.tech_stack : [],
+          tech_stack: Array.isArray(project['tech stack']) ? project['tech stack'] : [],
         }}
         submitLabel="Save Changes"
       />
