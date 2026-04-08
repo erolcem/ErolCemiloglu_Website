@@ -1,6 +1,6 @@
 'use client'
 
-import { useTransition, useRef } from 'react'
+import { useTransition, useRef, useState } from 'react'
 import { addTodo, toggleTodo, deleteTodo } from '../actions'
 
 interface Todo {
@@ -16,15 +16,21 @@ interface Props {
 
 export default function TodoList({ projectId, todos }: Props) {
   const [isPending, startTransition] = useTransition()
+  const [addError, setAddError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   function handleAdd(e: React.FormEvent) {
     e.preventDefault()
     const title = inputRef.current?.value.trim()
     if (!title) return
+    setAddError(null)
     startTransition(async () => {
-      await addTodo('project', projectId, title)
-      if (inputRef.current) inputRef.current.value = ''
+      const result = await addTodo('project', projectId, title)
+      if (result && 'error' in result) {
+        setAddError(result.error)
+      } else if (inputRef.current) {
+        inputRef.current.value = ''
+      }
     })
   }
 
@@ -80,6 +86,9 @@ export default function TodoList({ projectId, todos }: Props) {
         )}
       </div>
 
+      {addError && (
+        <p className="text-red-400 text-xs mb-2">{addError}</p>
+      )}
       <form onSubmit={handleAdd} className="flex gap-2">
         <input
           ref={inputRef}

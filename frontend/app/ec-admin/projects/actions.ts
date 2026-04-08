@@ -73,18 +73,24 @@ export async function updateProject(id: number, formData: FormData) {
 
 export async function addTodo(entityType: 'project' | 'skill', entityId: number, title: string) {
   const supabase = createAdminClient()
-  await supabase.from('item_todos').insert({ entity_type: entityType, entity_id: entityId, title })
+  const { error } = await supabase.from('item_todos').insert({ entity_type: entityType, entity_id: entityId, title })
+  if (error) {
+    console.error('[addTodo]', error.message)
+    return { error: error.message }
+  }
   revalidatePath(`/ec-admin/projects/${entityId}`)
 }
 
 export async function toggleTodo(todoId: number, currentDone: boolean, projectId: number) {
   const supabase = createAdminClient()
-  await supabase.from('item_todos').update({ is_done: !currentDone }).eq('id', todoId)
+  const { error } = await supabase.from('item_todos').update({ is_done: !currentDone }).eq('id', todoId)
+  if (error) console.error('[toggleTodo]', error.message)
   revalidatePath(`/ec-admin/projects/${projectId}`)
 }
 
 export async function deleteTodo(todoId: number, projectId: number) {
   const supabase = createAdminClient()
-  await supabase.from('item_todos').delete().eq('id', todoId)
+  const { error } = await supabase.from('item_todos').delete().eq('id', todoId)
+  if (error) console.error('[deleteTodo]', error.message)
   revalidatePath(`/ec-admin/projects/${projectId}`)
 }
