@@ -1,7 +1,7 @@
 'use client'
 
 import { useTransition, useRef, useState } from 'react'
-import { addTodo, toggleTodo, deleteTodo } from '../actions'
+import { addTodo, toggleTodo, deleteTodo } from '@/app/ec-admin/_actions/todos'
 
 interface Todo {
   id: number
@@ -10,11 +10,12 @@ interface Todo {
 }
 
 interface Props {
-  projectId: number
+  entityType: 'project' | 'skill'
+  entityId: number
   todos: Todo[]
 }
 
-export default function TodoList({ projectId, todos }: Props) {
+export default function TodoList({ entityType, entityId, todos }: Props) {
   const [isPending, startTransition] = useTransition()
   const [addError, setAddError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -25,7 +26,7 @@ export default function TodoList({ projectId, todos }: Props) {
     if (!title) return
     setAddError(null)
     startTransition(async () => {
-      const result = await addTodo('project', projectId, title)
+      const result = await addTodo(entityType, entityId, title)
       if (result && 'error' in result) {
         setAddError(result.error)
       } else if (inputRef.current) {
@@ -47,9 +48,7 @@ export default function TodoList({ projectId, todos }: Props) {
 
       <div className="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden mb-3">
         {todos.length === 0 ? (
-          <p className="text-neutral-600 text-sm px-4 py-6 text-center">
-            No tasks yet — add one below.
-          </p>
+          <p className="text-neutral-600 text-sm px-4 py-6 text-center">No tasks yet — add one below.</p>
         ) : (
           <ul>
             {todos.map((todo, i) => (
@@ -58,15 +57,13 @@ export default function TodoList({ projectId, todos }: Props) {
                 className={`flex items-center gap-3 px-4 py-3 ${i < todos.length - 1 ? 'border-b border-neutral-800' : ''} ${isPending ? 'opacity-60' : ''}`}
               >
                 <button
-                  onClick={() => startTransition(() => toggleTodo(todo.id, todo.is_done, projectId))}
-                  className={`w-4 h-4 rounded border shrink-0 transition-colors ${
-                    todo.is_done
-                      ? 'bg-emerald-600 border-emerald-600'
-                      : 'border-neutral-600 hover:border-neutral-400'
+                  onClick={() => startTransition(() => toggleTodo(todo.id, todo.is_done, entityType, entityId))}
+                  className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center transition-colors ${
+                    todo.is_done ? 'bg-emerald-600 border-emerald-600' : 'border-neutral-600 hover:border-neutral-400'
                   }`}
                 >
                   {todo.is_done && (
-                    <svg className="w-3 h-3 text-white mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   )}
@@ -75,7 +72,7 @@ export default function TodoList({ projectId, todos }: Props) {
                   {todo.title}
                 </span>
                 <button
-                  onClick={() => startTransition(() => deleteTodo(todo.id, projectId))}
+                  onClick={() => startTransition(() => deleteTodo(todo.id, entityType, entityId))}
                   className="text-neutral-700 hover:text-red-400 text-xs transition-colors"
                 >
                   ✕
@@ -86,9 +83,7 @@ export default function TodoList({ projectId, todos }: Props) {
         )}
       </div>
 
-      {addError && (
-        <p className="text-red-400 text-xs mb-2">{addError}</p>
-      )}
+      {addError && <p className="text-red-400 text-xs mb-2">{addError}</p>}
       <form onSubmit={handleAdd} className="flex gap-2">
         <input
           ref={inputRef}

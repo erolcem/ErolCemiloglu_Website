@@ -52,7 +52,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
         submitLabel="Save Changes"
       />
 
-      <TodoList projectId={projectId} todos={todos ?? []} />
+      <TodoList entityType="project" entityId={projectId} todos={todos ?? []} />
     </div>
   )
 }

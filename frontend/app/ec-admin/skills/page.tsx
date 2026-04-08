@@ -1,34 +1,31 @@
 import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/admin'
-import ProjectRow from './_components/ProjectRow'
+import SkillRow from './_components/SkillRow'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminProjectsPage() {
+export default async function AdminSkillsPage() {
   const supabase = createAdminClient()
-  const { data: projects } = await supabase
-    .from('projects')
-    .select('id, title, category, year, is_public')
-    .order('custom_order', { ascending: false, nullsFirst: false })
-    .order('id', { ascending: false })
+  const { data: skills } = await supabase
+    .from('skills')
+    .select('id, title, category, is_wide, is_public')
+    .order('id', { ascending: true })
 
-  const total = projects?.length ?? 0
-  const live = projects?.filter(p => p.is_public).length ?? 0
+  const total = skills?.length ?? 0
+  const live = skills?.filter(s => s.is_public).length ?? 0
 
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-100">Projects</h1>
-          <p className="text-neutral-500 text-sm mt-0.5">
-            {live} live · {total - live} draft
-          </p>
+          <h1 className="text-2xl font-bold text-neutral-100">Skills</h1>
+          <p className="text-neutral-500 text-sm mt-0.5">{live} live · {total - live} draft</p>
         </div>
         <Link
-          href="/ec-admin/projects/new"
+          href="/ec-admin/skills/new"
           className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded transition-colors"
         >
-          + New Project
+          + New Skill
         </Link>
       </div>
 
@@ -38,23 +35,19 @@ export default async function AdminProjectsPage() {
             <tr className="border-b border-neutral-800">
               <th className="text-left py-3 px-4 text-neutral-500 text-xs font-medium tracking-wide uppercase">Title</th>
               <th className="text-left py-3 px-4 text-neutral-500 text-xs font-medium tracking-wide uppercase">Category</th>
-              <th className="text-left py-3 px-4 text-neutral-500 text-xs font-medium tracking-wide uppercase">Year</th>
+              <th className="text-left py-3 px-4 text-neutral-500 text-xs font-medium tracking-wide uppercase">Layout</th>
               <th className="text-left py-3 px-4 text-neutral-500 text-xs font-medium tracking-wide uppercase">Status</th>
               <th className="text-left py-3 px-4 text-neutral-500 text-xs font-medium tracking-wide uppercase">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {projects && projects.length > 0 ? (
-              projects.map(project => (
-                <ProjectRow key={project.id} project={project} />
-              ))
+            {skills && skills.length > 0 ? (
+              skills.map(skill => <SkillRow key={skill.id} skill={skill} />)
             ) : (
               <tr>
                 <td colSpan={5} className="py-12 text-center text-neutral-600 text-sm">
-                  No projects yet.{' '}
-                  <Link href="/ec-admin/projects/new" className="text-blue-400 hover:text-blue-300">
-                    Create one.
-                  </Link>
+                  No skills yet.{' '}
+                  <Link href="/ec-admin/skills/new" className="text-blue-400 hover:text-blue-300">Create one.</Link>
                 </td>
               </tr>
             )}
