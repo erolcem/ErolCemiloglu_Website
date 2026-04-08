@@ -5,7 +5,7 @@ import { createServerClient } from '@supabase/ssr'
 // The goal is obscurity (no public links) + hard auth (Supabase session).
 const ADMIN_SEGMENT = 'ec-admin'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Only intercept admin routes
