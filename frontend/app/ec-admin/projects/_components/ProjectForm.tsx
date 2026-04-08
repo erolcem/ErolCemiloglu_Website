@@ -1,6 +1,6 @@
 'use client'
 
-import { useTransition } from 'react'
+import { useTransition, useState } from 'react'
 
 interface ProjectData {
   title?: string
@@ -15,24 +15,34 @@ interface ProjectData {
 }
 
 interface Props {
-  action: (formData: FormData) => Promise<void>
+  action: (formData: FormData) => Promise<void | { error: string }>
   defaultValues?: ProjectData
   submitLabel?: string
 }
 
 export default function ProjectForm({ action, defaultValues, submitLabel = 'Save Project' }: Props) {
   const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null)
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setError(null)
     const formData = new FormData(e.currentTarget)
-    startTransition(() => action(formData))
+    startTransition(async () => {
+      const result = await action(formData)
+      if (result && 'error' in result) setError(result.error)
+    })
   }
 
   const techString = defaultValues?.tech_stack?.join(', ') ?? ''
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      {error && (
+        <div className="bg-red-950/40 border border-red-800/60 text-red-400 text-sm rounded px-3 py-2">
+          {error}
+        </div>
+      )}
       <Field label="Title" name="title" defaultValue={defaultValues?.title} required />
 
       <div className="grid grid-cols-2 gap-4">

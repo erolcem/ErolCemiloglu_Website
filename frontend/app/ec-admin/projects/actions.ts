@@ -36,7 +36,8 @@ export async function createProject(formData: FormData) {
   }).select('id').single()
 
   if (error || !data) {
-    throw new Error(error?.message ?? 'Failed to create project')
+    console.error('[createProject]', error?.message)
+    return { error: error?.message ?? 'Failed to create project' }
   }
 
   revalidatePath('/ec-admin/projects')
@@ -49,7 +50,7 @@ export async function updateProject(id: number, formData: FormData) {
   const techRaw = (formData.get('tech_stack') as string) ?? ''
   const techArray = techRaw.split(',').map(t => t.trim()).filter(Boolean)
 
-  await supabase.from('projects').update({
+  const { error } = await supabase.from('projects').update({
     title: formData.get('title') as string,
     category: formData.get('category') as string,
     description: formData.get('description') as string,
@@ -60,6 +61,11 @@ export async function updateProject(id: number, formData: FormData) {
     custom_order: (formData.get('custom_order') as string) || null,
     is_public: formData.get('is_public') === 'true',
   }).eq('id', id)
+
+  if (error) {
+    console.error('[updateProject]', error.message)
+    return { error: error.message }
+  }
 
   revalidatePath('/ec-admin/projects')
   revalidatePath(`/ec-admin/projects/${id}`)
