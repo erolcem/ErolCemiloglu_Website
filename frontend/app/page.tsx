@@ -23,7 +23,7 @@ export default function Home() {
 
         <div className="mb-6 flex justify-center">
             <span className="px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-mono uppercase tracking-widest">
-                Please give 40 seconds for backend to startup
+                Currently studying Masters of Engineering (Electrical & computer systems) at Monash University
             </span>
         </div>
 
