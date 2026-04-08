@@ -43,14 +43,11 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // IMPORTANT: Do not run any other logic between createServerClient and
-  // supabase.auth.getUser(). This ensures the session cookie is refreshed.
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    // No session — redirect to the hidden login page
     const loginUrl = request.nextUrl.clone()
     loginUrl.pathname = `/${ADMIN_SEGMENT}/login`
     return NextResponse.redirect(loginUrl)
@@ -62,7 +59,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/ec-admin/:path*',
-    // Add the auth callback so Supabase can exchange the code for a session
     '/api/auth/callback',
   ],
 }
