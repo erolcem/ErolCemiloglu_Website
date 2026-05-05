@@ -136,6 +136,18 @@ export default function TodoBoard({ initialGroups, totalPending }: { initialGrou
     }
   }, [])
 
+  // Sync with server data when it changes (like when we add/delete a todo)
+  useEffect(() => {
+    setGroups((currentGroups) => {
+      const currentOrder = currentGroups.map(g => g.id)
+      return [...initialGroups].sort((a, b) => {
+        const indexA = currentOrder.indexOf(a.id)
+        const indexB = currentOrder.indexOf(b.id)
+        return (indexA > -1 ? indexA : Infinity) - (indexB > -1 ? indexB : Infinity)
+      })
+    })
+  }, [initialGroups])
+
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
 

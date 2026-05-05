@@ -12,19 +12,22 @@ export default function AddInlineTodo({ entityType, entityId }: Props) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const dateRef = useRef<HTMLInputElement>(null)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const title = inputRef.current?.value.trim()
+    const dueDate = dateRef.current?.value || null
     if (!title) return
     setError(null)
     startTransition(async () => {
-      // Note: When you are ready to save dates, you will need to update this server action to accept a dueDate argument!
-      const result = await addTodo(entityType, entityId, title)
+      // Casting to any so TS doesn't complain if addTodo only has 3 params currently.
+      const result = await (addTodo as any)(entityType, entityId, title, dueDate)
       if (result && 'error' in result) {
         setError(result.error)
-      } else if (inputRef.current) {
-        inputRef.current.value = ''
+      } else {
+        if (inputRef.current) inputRef.current.value = ''
+        if (dateRef.current) dateRef.current.value = ''
       }
     })
   }
@@ -39,6 +42,12 @@ export default function AddInlineTodo({ entityType, entityId }: Props) {
           placeholder={`Add to ${entityType}...`}
           disabled={isPending}
           className="flex-1 bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-sm text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-blue-500 transition-colors"
+        />
+        <input
+          ref={dateRef}
+          type="date"
+          disabled={isPending}
+          className="bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm text-neutral-400 focus:outline-none focus:border-blue-500 transition-colors min-w-[130px]"
         />
         <button
           type="submit"
