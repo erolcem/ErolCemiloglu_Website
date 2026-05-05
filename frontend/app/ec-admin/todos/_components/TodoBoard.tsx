@@ -20,7 +20,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 
 import TodoCentralList from './TodoCentralList'
-import AddGeneralTodo from './AddGeneralTodo'
+import AddInlineTodo from './AddGeneralTodo'
 
 export type TodoItem = {
   id: number
@@ -45,7 +45,7 @@ export type Group = {
 }
 
 // --- Individual Draggable Group Component ---
-function SortableGroupCard({ group }: { group: Group }) {
+function SortableGroupCard({ group, hideCompleted }: { group: Group, hideCompleted: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: group.id,
   })
@@ -98,22 +98,14 @@ function SortableGroupCard({ group }: { group: Group }) {
       </div>
 
       {/* Todos list */}
-      {group.todos.length > 0 ? (
         <div className="flex-1 overflow-y-auto max-h-[400px]">
-          <TodoCentralList todos={group.todos as any} entityType={group.entity.type} entityId={group.entity.id} />
+        <TodoCentralList todos={group.todos as any} entityType={group.entity.type} entityId={group.entity.id} hideCompleted={hideCompleted} />
         </div>
-      ) : (
-        group.entity.type === 'general' && (
-          <p className="text-neutral-600 text-sm px-4 py-4 text-center">No general tasks yet.</p>
-        )
-      )}
 
-      {/* Inline add form */}
-      {group.entity.type === 'general' && (
+      {/* Universal Inline add form */}
         <div className="px-4 py-3 border-t border-neutral-800 mt-auto">
-          <AddGeneralTodo />
+        <AddInlineTodo entityType={group.entity.type} entityId={group.entity.id} />
         </div>
-      )}
     </div>
   )
 }
@@ -121,6 +113,7 @@ function SortableGroupCard({ group }: { group: Group }) {
 // --- Main Board Component ---
 export default function TodoBoard({ initialGroups, totalPending }: { initialGroups: Group[]; totalPending: number }) {
   const [groups, setGroups] = useState<Group[]>(initialGroups)
+  const [hideCompleted, setHideCompleted] = useState(false)
   
   // Setup DnD Sensors
   const sensors = useSensors(
@@ -161,16 +154,26 @@ export default function TodoBoard({ initialGroups, totalPending }: { initialGrou
 
   return (
     <div className="p-8 w-full max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-100">Command Center Tasks</h1>
-        <p className="text-neutral-500 text-sm mt-0.5">{totalPending} pending action items</p>
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-100">Command Center Tasks</h1>
+          <p className="text-neutral-500 text-sm mt-0.5">{totalPending} pending action items</p>
+        </div>
+        <button
+          onClick={() => setHideCompleted(!hideCompleted)}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
+            hideCompleted ? 'bg-blue-600/20 text-blue-400 border-blue-500/30' : 'bg-neutral-800 text-neutral-400 border-neutral-700 hover:bg-neutral-700'
+          }`}
+        >
+          {hideCompleted ? 'Showing Active Only' : 'Hide Completed'}
+        </button>
       </div>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={groups.map((g) => g.id)} strategy={verticalListSortingStrategy}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
             {groups.map((group) => (
-              <SortableGroupCard key={group.id} group={group} />
+              <SortableGroupCard key={group.id} group={group} hideCompleted={hideCompleted} />
             ))}
           </div>
         </SortableContext>
