@@ -57,6 +57,33 @@ function SortableTodoItem({
     opacity: isDragging ? 0.8 : 1,
   }
 
+  let dateLabel = ''
+  let dateColor = 'text-blue-400'
+  
+  if (todo.due_date) {
+    const due = new Date(todo.due_date)
+    const now = new Date()
+    const dueMidnight = new Date(due.getFullYear(), due.getMonth(), due.getDate())
+    const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const diffDays = Math.round((dueMidnight.getTime() - nowMidnight.getTime()) / (1000 * 60 * 60 * 24))
+    
+    const formatted = due.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+    if (diffDays === 0) {
+      dateLabel = `${formatted} (Today)`
+      dateColor = 'text-amber-400'
+    } else if (diffDays === 1) {
+      dateLabel = `${formatted} (Tomorrow)`
+    } else if (diffDays === -1) {
+      dateLabel = `${formatted} (Yesterday)`
+      dateColor = 'text-red-400'
+    } else if (diffDays < -1) {
+      dateLabel = `${formatted} (${Math.abs(diffDays)} days overdue)`
+      dateColor = 'text-red-500 font-medium'
+    } else {
+      dateLabel = `${formatted} (${diffDays} days left)`
+    }
+  }
+
   return (
     <li
       ref={setNodeRef}
@@ -88,11 +115,11 @@ function SortableTodoItem({
             {todo.title}
           </span>
           {todo.due_date && (
-            <span className="text-xs text-blue-400 mt-1 inline-flex items-center gap-1">
+            <span className={`text-xs mt-1 inline-flex items-center gap-1 ${todo.is_done ? 'text-neutral-500' : dateColor}`}>
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              {new Date(todo.due_date).toLocaleDateString()}
+              {dateLabel}
             </span>
           )}
           {todo.description && (

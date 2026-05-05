@@ -13,21 +13,24 @@ export default function AddInlineTodo({ entityType, entityId }: Props) {
   const [error, setError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const dateRef = useRef<HTMLInputElement>(null)
+  const descRef = useRef<HTMLInputElement>(null)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const title = inputRef.current?.value.trim()
     const dueDate = dateRef.current?.value || null
+    const description = descRef.current?.value.trim() || null
     if (!title) return
     setError(null)
     startTransition(async () => {
       // Casting to any so TS doesn't complain if addTodo only has 3 params currently.
-      const result = await (addTodo as any)(entityType, entityId, title, dueDate)
+      const result = await (addTodo as any)(entityType, entityId, title, dueDate, description)
       if (result && 'error' in result) {
         setError(result.error)
       } else {
         if (inputRef.current) inputRef.current.value = ''
         if (dateRef.current) dateRef.current.value = ''
+        if (descRef.current) descRef.current.value = ''
       }
     })
   }
@@ -41,22 +44,29 @@ export default function AddInlineTodo({ entityType, entityId }: Props) {
           type="text"
           placeholder={`Add to ${entityType}...`}
           disabled={isPending}
-          className="flex-1 bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-sm text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-blue-500 transition-colors"
+          className="flex-1 bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-sm text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-blue-500 transition-colors min-w-0"
         />
         <input
           ref={dateRef}
           type="date"
           disabled={isPending}
-          className="bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm text-neutral-400 focus:outline-none focus:border-blue-500 transition-colors min-w-[130px]"
+          className="bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm text-neutral-400 focus:outline-none focus:border-blue-500 transition-colors min-w-[130px] w-[130px]"
         />
         <button
           type="submit"
           disabled={isPending}
-          className="bg-neutral-700 hover:bg-neutral-600 text-neutral-200 text-sm px-4 py-2 rounded transition-colors"
+          className="bg-neutral-700 hover:bg-neutral-600 text-neutral-200 text-sm px-4 py-2 rounded transition-colors whitespace-nowrap"
         >
           Add
         </button>
       </div>
+      <input
+        ref={descRef}
+        type="text"
+        placeholder="Description (optional)..."
+        disabled={isPending}
+        className="w-full bg-neutral-800/50 border border-neutral-700 rounded px-3 py-1.5 text-xs text-neutral-300 placeholder:text-neutral-600 focus:outline-none focus:border-blue-500 transition-colors"
+      />
     </form>
   )
 }

@@ -183,7 +183,7 @@ export default function TodoBoard({ initialGroups, totalPending }: { initialGrou
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={groups.map((g) => g.id)} strategy={verticalListSortingStrategy}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-6 items-start">
             {groups.map((group) => (
               <SortableGroupCard key={group.id} group={group} hideCompleted={hideCompleted} />
             ))}
