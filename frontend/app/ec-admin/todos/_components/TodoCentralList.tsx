@@ -1,7 +1,7 @@
 'use client'
 
 import { useTransition, useState, useEffect } from 'react'
-import { toggleTodo, deleteTodo, editTodo } from '@/app/ec-admin/_actions/todos'
+import { toggleTodo, deleteTodo, editTodo, reorderTodos } from '@/app/ec-admin/_actions/todos'
 import {
   DndContext,
   closestCenter,
@@ -26,6 +26,7 @@ interface Todo {
   is_done: boolean
   due_date?: string | null
   description?: string | null
+  position?: number | null
 }
 
 interface Props {
@@ -252,14 +253,29 @@ export default function TodoCentralList({ todos, entityType, entityId, hideCompl
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (over && active.id !== over.id) {
+      let newOrderUpdates: { id: number; position: number }[] = []
+
       setOptimisticTodos((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id)
         const newIndex = items.findIndex((item) => item.id === over.id)
-        return arrayMove(items, oldIndex, newIndex)
+        const reordered = arrayMove(items, oldIndex, newIndex)
+
+        // Extract all current positions and sort them descending (highest position = top of list)
+        const positions = items.map(t => t.position ?? t.id).sort((a, b) => b - a)
+
+        // Reassign the highest positions to the items in their new order
+        const finalItems = reordered.map((item, i) => ({ ...item, position: positions[i] }))
+        
+        newOrderUpdates = finalItems.map(item => ({ id: item.id, position: item.position! }))
+        
+        return finalItems
       })
       
-      // TODO: Add a server action call here to persist the order!
-      // e.g., reorderTodos(active.id, over.id)
+      if (newOrderUpdates.length > 0) {
+        startTransition(() => {
+          reorderTodos(newOrderUpdates, entityType, entityId)
+        })
+      }
     }
   }
 

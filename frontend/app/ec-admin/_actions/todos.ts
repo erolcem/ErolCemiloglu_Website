@@ -81,3 +81,21 @@ export async function editTodo(
   if (error) console.error('[editTodo]', error.message)
   revalidateAll(entityType, entityId)
 }
+
+export async function reorderTodos(
+  updates: { id: number; position: number }[],
+  entityType: EntityType,
+  entityId: number | null
+) {
+  const supabase = createAdminClient()
+  
+  const promises = updates.map(update => 
+    supabase
+      .from('item_todos')
+      .update({ position: update.position })
+      .eq('id', update.id)
+  )
+  
+  await Promise.all(promises)
+  revalidateAll(entityType, entityId)
+}
