@@ -1,7 +1,7 @@
 'use client'
 
 import { useTransition, useState, useEffect } from 'react'
-import { toggleTodo, deleteTodo } from '@/app/ec-admin/_actions/todos'
+import { toggleTodo, deleteTodo, editTodo } from '@/app/ec-admin/_actions/todos'
 import {
   DndContext,
   closestCenter,
@@ -39,13 +39,28 @@ function SortableTodoItem({
   todo, 
   isLast, 
   onToggle, 
-  onDelete 
+  onDelete,
+  onSave
 }: { 
   todo: Todo; 
   isLast: boolean; 
   onToggle: (todo: Todo) => void; 
   onDelete: (id: number) => void;
+  onSave: (id: number, title: string, dueDate: string | null, description: string | null) => void;
 }) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [editTitle, setEditTitle] = useState(todo.title)
+  const [editDate, setEditDate] = useState(todo.due_date ? todo.due_date.substring(0, 10) : '')
+  const [editDesc, setEditDesc] = useState(todo.description || '')
+
+  useEffect(() => {
+    if (!isEditing) {
+      setEditTitle(todo.title)
+      setEditDate(todo.due_date ? todo.due_date.substring(0, 10) : '')
+      setEditDesc(todo.description || '')
+    }
+  }, [todo, isEditing])
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: todo.id,
   })
@@ -55,6 +70,54 @@ function SortableTodoItem({
     transition,
     zIndex: isDragging ? 10 : 1,
     opacity: isDragging ? 0.8 : 1,
+  }
+
+  if (isEditing) {
+    return (
+      <li
+        ref={setNodeRef}
+        style={style}
+        className={`flex flex-col gap-2 px-4 py-3 bg-neutral-900 ${!isLast ? 'border-b border-neutral-800' : ''}`}
+      >
+        <input
+          type="text"
+          value={editTitle}
+          onChange={(e) => setEditTitle(e.target.value)}
+          className="w-full bg-neutral-800 border border-neutral-700 rounded px-2 py-1.5 text-sm text-neutral-100 focus:outline-none focus:border-blue-500"
+          placeholder="Task title"
+          autoFocus
+        />
+        <input
+          type="date"
+          value={editDate}
+          onChange={(e) => setEditDate(e.target.value)}
+          className="w-full bg-neutral-800 border border-neutral-700 rounded px-2 py-1.5 text-sm text-neutral-400 focus:outline-none focus:border-blue-500"
+        />
+        <textarea
+          value={editDesc}
+          onChange={(e) => setEditDesc(e.target.value)}
+          className="w-full bg-neutral-800 border border-neutral-700 rounded px-2 py-1.5 text-sm text-neutral-300 focus:outline-none focus:border-blue-500 min-h-[60px]"
+          placeholder="Description (optional)"
+        />
+        <div className="flex justify-end gap-2 mt-1">
+          <button
+            onClick={() => setIsEditing(false)}
+            className="px-3 py-1.5 text-xs text-neutral-400 hover:text-neutral-200 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              onSave(todo.id, editTitle, editDate || null, editDesc || null)
+              setIsEditing(false)
+            }}
+            className="px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-500 text-white rounded transition-colors"
+          >
+            Save
+          </button>
+        </div>
+      </li>
+    )
   }
 
   let dateLabel = ''
@@ -128,12 +191,24 @@ function SortableTodoItem({
             </p>
           )}
         </div>
-        <button
-          onClick={() => onDelete(todo.id)}
-          className="text-neutral-700 hover:text-red-400 text-xs transition-colors p-1"
-        >
-          ✕
-        </button>
+        <div className="flex items-start shrink-0">
+          <button
+            onClick={() => setIsEditing(true)}
+            className="text-neutral-700 hover:text-blue-400 transition-colors p-1"
+            title="Edit Task"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+          </button>
+          <button
+            onClick={() => onDelete(todo.id)}
+            className="text-neutral-700 hover:text-red-400 text-sm font-medium transition-colors p-1 leading-none"
+            title="Delete Task"
+          >
+            ✕
+          </button>
+        </div>
       </div>
     </li>
   )
@@ -159,6 +234,13 @@ export default function TodoCentralList({ todos, entityType, entityId, hideCompl
     setOptimisticTodos(prev => prev.filter(t => t.id !== id))
     startTransition(() => {
       deleteTodo(id, entityType, entityId)
+    })
+  }
+
+  const handleEdit = (id: number, title: string, dueDate: string | null, description: string | null) => {
+    setOptimisticTodos(prev => prev.map(t => t.id === id ? { ...t, title, due_date: dueDate, description } : t))
+    startTransition(() => {
+      editTodo(id, title, dueDate, description, entityType, entityId)
     })
   }
 
@@ -200,6 +282,7 @@ export default function TodoCentralList({ todos, entityType, entityId, hideCompl
               isLast={i === visibleTodos.length - 1}
               onToggle={handleToggle}
               onDelete={handleDelete}
+              onSave={handleEdit}
             />
           ))}
         </ul>

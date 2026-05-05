@@ -63,3 +63,21 @@ export async function deleteTodo(
   if (error) console.error('[deleteTodo]', error.message)
   revalidateAll(entityType, entityId)
 }
+
+export async function editTodo(
+  todoId: number,
+  title: string,
+  dueDate: string | null,
+  description: string | null,
+  entityType: EntityType,
+  entityId: number | null
+) {
+  const supabase = createAdminClient()
+  const { error } = await supabase
+    .from('item_todos')
+    .update({ title, due_date: dueDate || null, description: description || null })
+    .eq('id', todoId)
+    
+  if (error) console.error('[editTodo]', error.message)
+  revalidateAll(entityType, entityId)
+}
