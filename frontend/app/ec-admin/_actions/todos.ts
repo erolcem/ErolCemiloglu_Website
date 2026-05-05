@@ -11,17 +11,32 @@ function revalidateAll(entityType: EntityType, entityId: number | null) {
   if (entityType === 'skill' && entityId) revalidatePath(`/ec-admin/skills/${entityId}`)
 }
 
-export async function addTodo(entityType: EntityType, entityId: number | null, title: string) {
+export async function addTodo(
+  entityType: 'project' | 'skill' | 'general',
+  entityId: number | null,
+  title: string,
+  dueDate?: string | null,        // <-- We add the parameter here
+  description?: string | null     // <-- And here
+) {
   const supabase = createAdminClient()
+
   const { error } = await supabase
     .from('item_todos')
-    .insert({ entity_type: entityType, entity_id: entityId, title })
+    .insert({
+      entity_type: entityType,
+      entity_id: entityId,
+      title: title,
+      due_date: dueDate || null,       // <-- Send it to Supabase
+      description: description || null // <-- Send it to Supabase
+    })
+
   if (error) {
-    console.error('[addTodo]', error.message)
     return { error: error.message }
   }
-  revalidateAll(entityType, entityId)
+
+  revalidatePath('/ec-admin/todos')
 }
+
 
 export async function toggleTodo(
   todoId: number,
